@@ -1,0 +1,35 @@
+{
+  "name": "api-rest-nodejs-ms",
+  "version": "1.0.0",
+  "description": "API REST com Node.js para estudos - Rocketseat",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "dev": "tsx watch src/server.ts",
+    "knex": "node --no-warnings --loader tsx ./node_modules/.bin/knex"
+  },
+  "repository": {
+    "type": "git",
+    "url": "fsdfksdkfçdfs"
+  },
+  "keywords": [
+    "api",
+    "rest",
+    "nodejs",
+    "fastify"
+  ],
+  "author": "Mayron Souza",
+  "license": "ISC",
+  "dependencies": {
+    "fastify": "^4.27.0",
+    "knex": "^3.1.0",
+    "sqlite3": "^5.1.7"
+  },
+  "devDependencies": {
+    "@rocketseat/eslint-config": "^2.2.2",
+    "@types/node": "^20.12.12",
+    "eslint": "^8.57.0",
+    "tsx": "^4.11.0",
+    "typescript": "^5.4.5"
+  }
+}
