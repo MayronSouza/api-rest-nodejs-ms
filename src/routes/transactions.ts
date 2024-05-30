@@ -1,26 +1,47 @@
 import { FastifyInstance } from 'fastify'
-import { connection } from '../database'
 import { z } from 'zod'
 import { randomUUID } from 'node:crypto'
 
+import { connection } from '../database'
+import { checkSessionIdExists } from '../middlewares/check-session-id-exists'
+
 export const transactionsRoutes = async (app: FastifyInstance) => {
-  app.get('/', async () => {
-    const transactions = await connection('transactions').select()
+  app.get(
+    '/',
+    {
+      preHandler: [checkSessionIdExists],
+    },
+    async (request) => {
+      const { sessionId } = request.cookies
 
-    return { transactions }
-  })
+      const transactions = await connection('transactions')
+        .where('session_id', sessionId)
+        .select()
 
-  app.get('/:id', async (request) => {
-    const getTransactionParamsSchema = z.object({
-      id: z.string().uuid(),
-    })
+      return { transactions }
+    },
+  )
 
-    const { id } = getTransactionParamsSchema.parse(request.params)
+  app.get(
+    '/:id',
+    {
+      preHandler: [checkSessionIdExists],
+    },
+    async (request) => {
+      const { sessionId } = request.cookies
+      const getTransactionParamsSchema = z.object({
+        id: z.string().uuid(),
+      })
 
-    const transaction = await connection('transactions').where('id', id)
+      const { id } = getTransactionParamsSchema.parse(request.params)
 
-    return { transaction }
-  })
+      const transaction = await connection('transactions')
+        .where('id', id)
+        .andWhere('session_id', sessionId)
+
+      return { transaction }
+    },
+  )
 
   app.post('/', async (request, reply) => {
     const createTransactionBodySchema = z.object({
@@ -54,8 +75,10 @@ export const transactionsRoutes = async (app: FastifyInstance) => {
     return reply.status(201).send()
   })
 
-  app.get('/summary', async () => {
+  app.get('/summary', async (request) => {
+    const { sessionId } = request.cookies
     const summary = await connection('transactions')
+      .where('session_id', sessionId)
       .sum('amount', {
         as: 'amount',
       })
