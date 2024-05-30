@@ -38,6 +38,7 @@ export const transactionsRoutes = async (app: FastifyInstance) => {
       const transaction = await connection('transactions')
         .where('id', id)
         .andWhere('session_id', sessionId)
+        .first()
 
       return { transaction }
     },
