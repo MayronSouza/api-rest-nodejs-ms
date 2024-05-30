@@ -5,7 +5,19 @@ import { randomUUID } from 'node:crypto'
 
 export const transactionsRoutes = async (app: FastifyInstance) => {
   app.get('/', async () => {
-    const transaction = await connection('transactions').select()
+    const transactions = await connection('transactions').select()
+
+    return { transactions }
+  })
+
+  app.get('/:id', async (request) => {
+    const getTransactionParamsSchema = z.object({
+      id: z.string().uuid(),
+    })
+
+    const { id } = getTransactionParamsSchema.parse(request.params)
+
+    const transaction = await connection('transactions').where('id', id)
 
     return { transaction }
   })
